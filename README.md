@@ -117,8 +117,36 @@ De igual forma, si se cambia el formato del mensaje que envian los dispositivos 
 
 En defintiva, la idea es capturar y registrar los eventos que han ocurrido en la realidad, que es lo realmente valioso. Si se posee este registro luego puede procesarse de cuantas formas y veces se desee.
 
+#### Apunte: una API simple incorporada
+
+Simplemente con crear un flujo que escuche una petición *GET* en */data* y hacer que retorne el resultado de ejecutar un `SELECT * FROM MESSAGE` ya lograríamos exponer los eventos registrados para representarlos en cualquier simple aplicación *front-end* de desarrollo propio o un cuadro de mando de terceros con la posibilidad de consumir estoa datos.
+
+![](/docs/nodered-api.png)
+
+Respuesta de GET a `localhost:1880/data`:
+
+```json
+[
+    {
+        "id": 17,
+        "created": "2024-08-10T13:14:28.220Z",
+        "estado": "PENDIENTE",
+        "topic": "FC",
+        "content": "{\"id\":\"def456\",\"terr\":\"70\"}"
+    },
+    {
+        "id": 19,
+        "created": "2024-08-10T13:14:29.190Z",
+        "estado": "PENDIENTE",
+        "topic": "DHT",
+        "content": "{\"id\":\"abc123\",\"temp\":\"31\",\"hum\":\"51\"}"
+    },
+    ...
+```
+
 
 ### Backoffice
+
 
 Modelo de datos:
 ![](/docs/model.jpg)
@@ -136,7 +164,13 @@ docker-compose up -d
 
 Una vez estén en ejecución los contenedores:
 
-* La consola de Node-RED está disponible en `localhost:1880`
+* La consola de *Node-RED* está disponible en `localhost:1880`
 * La base de datos está expuesta en el puerto 5432, con usuario y contraseña `postgres`
-* Mosquitto está expuesto en el puerto 1883. Nótese que los dispositivos *IoT* deben apuntar a la ip externa de la máquina y no a *localhost*.
+* *Mosquitto* está expuesto en el puerto 1883. Nótese que los dispositivos *IoT* deben apuntar a la ip externa de la máquina y no a *localhost*.
 
+
+En el directorio `fakeclients` se proveen dos scripts de Python que simulan los dispositivos *IoT*:
+
+* *client1.py* simula los sensores DHT y FC. Si se ejecuta, cada segundo emitirá datos de temperatura y humedad del aire y de humedad del suelo.
+
+* *client2.py* simula la electroválvula y el sensor de caudal. Cuando recibe un mensaje en el topic `commands/irrigation/on` comienza a emitir números enteros crecientes (1, 2, 3, 4...) hasta que recibe un mensaje en el topic `commands/irrigation/off`, tras lo cual emite un mensaje en el topic `sensors/yf/data/irrigation` con la cantidad final empleada en el riego.
