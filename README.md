@@ -17,7 +17,9 @@ Uno de los planteamientos del proyecto es separar la implementación de un backo
 
 ### Sensores
 
-###¢ Sensor DHT-22
+Se utilizan una serie de dispositivos que serán descritos más adelante en la sección de *Hardware*, pero nótese que en realidad podría utilizarse cualquier hardware siempre que se comporte como describe esta sección. De hecho, como se detalla en la sección *Despliegue*, se provee un código Python que simula virtualmente estos dispositivos para poder probar de manera simple el correcto funcionamiento del sistema.
+
+#### Sensor DHT
 Mide la temperatura y la emitad del aire. Publica un mensaje en el topic `sensors/dht/data` con el formato `id={id}&temp={temp}&hum={hum}`. Donde:
 
 * id: id del dispositivo físico.
@@ -122,4 +124,19 @@ Modelo de datos:
 ![](/docs/model.jpg)
 
 Flujo de Node-RED:
+
+
+## Despliegue
+
+En la raíz del proyecto ejecutar:
+
+```
+docker-compose up -d
+```
+
+Una vez estén en ejecución los contenedores:
+
+* La consola de Node-RED está disponible en `localhost:1880`
+* La base de datos está expuesta en el puerto 5432, con usuario y contraseña `postgres`
+* Mosquitto está expuesto en el puerto 1883. Nótese que los dispositivos *IoT* deben apuntar a la ip externa de la máquina y no a *localhost*.
 
