@@ -15,6 +15,7 @@ services:
     container_name: nodered
     volumes:
       - ./nodered:/data
+      - ./nodered/package.json:/usr/src/node-red/package.json
     ports:
       - 1880:1880
 

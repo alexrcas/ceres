@@ -8,108 +8,6 @@
         "env": []
     },
     {
-        "id": "a992d33cfb0e4e86",
-        "type": "postgresDB",
-        "name": "postgres@postgres:5432/postgres",
-        "host": "postgres",
-        "port": "5432",
-        "database": "postgres2",
-        "ssl": false,
-        "max": "10",
-        "min": 1,
-        "idle": "1000"
-    },
-    {
-        "id": "f265809e0eafa9e4",
-        "type": "pgConfig",
-        "name": "postgres",
-        "host": "postgres",
-        "port": "5432",
-        "dbname": "postgres",
-        "max": "10",
-        "idleTimeout": "1000",
-        "connectionTimeout": "10000",
-        "user": "postgres",
-        "password": "postgres"
-    },
-    {
-        "id": "22206f91c875d542",
-        "type": "mqtt-broker",
-        "name": "",
-        "broker": "mosquitto",
-        "port": "1883",
-        "clientid": "",
-        "autoConnect": true,
-        "usetls": false,
-        "protocolVersion": "4",
-        "keepalive": "60",
-        "cleansession": true,
-        "birthTopic": "",
-        "birthQos": "0",
-        "birthPayload": "",
-        "birthMsg": {},
-        "closeTopic": "",
-        "closeQos": "0",
-        "closePayload": "",
-        "closeMsg": {},
-        "willTopic": "",
-        "willQos": "0",
-        "willPayload": "",
-        "willMsg": {},
-        "userProps": "",
-        "sessionExpiry": ""
-    },
-    {
-        "id": "413224891f7d0348",
-        "type": "postgreSQLConfig",
-        "name": "insertInDatabase",
-        "host": "postgres",
-        "hostFieldType": "str",
-        "port": "5432",
-        "portFieldType": "num",
-        "database": "postgres",
-        "databaseFieldType": "str",
-        "ssl": "false",
-        "sslFieldType": "bool",
-        "applicationName": "",
-        "applicationNameType": "str",
-        "max": "10",
-        "maxFieldType": "num",
-        "idle": "1000",
-        "idleFieldType": "num",
-        "connectionTimeout": "10000",
-        "connectionTimeoutFieldType": "num",
-        "user": "postgres",
-        "userFieldType": "str",
-        "password": "postgres",
-        "passwordFieldType": "str"
-    },
-    {
-        "id": "0754a5c36a0b2322",
-        "type": "postgreSQLConfig",
-        "name": "",
-        "host": "postgres",
-        "hostFieldType": "str",
-        "port": "5432",
-        "portFieldType": "num",
-        "database": "postgres",
-        "databaseFieldType": "str",
-        "ssl": "false",
-        "sslFieldType": "bool",
-        "applicationName": "",
-        "applicationNameType": "str",
-        "max": "10",
-        "maxFieldType": "num",
-        "idle": "1000",
-        "idleFieldType": "num",
-        "connectionTimeout": "10000",
-        "connectionTimeoutFieldType": "num",
-        "user": "postgres",
-        "userFieldType": "str",
-        "password": "postgres",
-        "passwordFieldType": "str"
-    },
-    {
         "id": "476cf3f5126c465b",
         "type": "mqtt out",
         "z": "8dea386e62742915",
@@ -124,7 +22,7 @@
         "expiry": "",
         "broker": "22206f91c875d542",
         "x": 710,
-        "y": 480,
+        "y": 560,
         "wires": []
     },
     {
@@ -151,7 +49,7 @@
         "type": "mqtt out",
         "z": "8dea386e62742915",
         "name": "",
-        "topic": "commands/irrigation/on",
+        "topic": "commands/yf/ping",
         "qos": "",
         "retain": "",
         "respTopic": "",
@@ -160,7 +58,7 @@
         "correl": "",
         "expiry": "",
         "broker": "22206f91c875d542",
-        "x": 710,
+        "x": 690,
         "y": 420,
         "wires": []
     },
@@ -182,7 +80,7 @@
         "repair": false,
         "outputs": 1,
         "x": 470,
-        "y": 480,
+        "y": 560,
         "wires": [
             [
                 "476cf3f5126c465b"
@@ -245,7 +143,7 @@
         "rh": 0,
         "inputs": 0,
         "x": 230,
-        "y": 480,
+        "y": 560,
         "wires": [
             [
                 "d29e9e3d1754643c"
@@ -390,5 +288,142 @@
                 "afcd26908147c8f0"
             ]
         ]
+    },
+    {
+        "id": "010475bde782eaab",
+        "type": "http in",
+        "z": "8dea386e62742915",
+        "name": "",
+        "url": "data",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 200,
+        "y": 640,
+        "wires": [
+            [
+                "377a918091d0a153"
+            ]
+        ]
+    },
+    {
+        "id": "377a918091d0a153",
+        "type": "postgresql",
+        "z": "8dea386e62742915",
+        "name": "getData",
+        "query": "SELECT * FROM MESSAGE;",
+        "postgreSQLConfig": "413224891f7d0348",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 380,
+        "y": 640,
+        "wires": [
+            [
+                "99a5ec91ca00a1e7"
+            ]
+        ]
+    },
+    {
+        "id": "99a5ec91ca00a1e7",
+        "type": "http response",
+        "z": "8dea386e62742915",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 560,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "bc47394842f60a4a",
+        "type": "mqtt in",
+        "z": "8dea386e62742915",
+        "name": "",
+        "topic": "commands/yf/pong",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "22206f91c875d542",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 230,
+        "y": 480,
+        "wires": [
+            [
+                "8756c34a79c20210"
+            ]
+        ]
+    },
+    {
+        "id": "8756c34a79c20210",
+        "type": "mqtt out",
+        "z": "8dea386e62742915",
+        "name": "",
+        "topic": "commands/irrigation/on",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "22206f91c875d542",
+        "x": 490,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "22206f91c875d542",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "mosquitto",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "413224891f7d0348",
+        "type": "postgreSQLConfig",
+        "name": "insertInDatabase",
+        "host": "postgres",
+        "hostFieldType": "str",
+        "port": "5432",
+        "portFieldType": "num",
+        "database": "postgres",
+        "databaseFieldType": "str",
+        "ssl": "false",
+        "sslFieldType": "bool",
+        "applicationName": "",
+        "applicationNameType": "str",
+        "max": "10",
+        "maxFieldType": "num",
+        "idle": "1000",
+        "idleFieldType": "num",
+        "connectionTimeout": "10000",
+        "connectionTimeoutFieldType": "num",
+        "user": "postgres",
+        "userFieldType": "str",
+        "password": "postgres",
+        "passwordFieldType": "str"
     }
 ]

@@ -88,7 +88,7 @@ El cuarto flujo sirve para escuchar la petición para inicar el riego. Esta peti
 "waterLimit": 2.5
 ```
 
-Posteriormente hace tres cosas: devuelve un *OK* al servidor, persiste la cantidad de agua a utilizar en el riego, y activa la electroválvula para que el agua empiece a fluir.
+Posteriormente hace tres cosas: devuelve un *OK* al servidor, persiste la cantidad de agua a utilizar en el riego, y activa la electroválvula para que el agua empiece a fluir. Sin embargo, esta activación de la electroválvula no se hace directamente sino de dos pasos. Obsérvese que en lugar de activar directamente el riego, se hace un *ping* al sensor de caudal. En el flujo inmediatamente inferior, se escucha la respuesta que devuelve este último sensor y acto seguido entonces sí, se activa el riego. Esto se hace para no activar el riego si el sensor de caudal no está operativo ya que entonces no podría controlarse la cantidad de agua especificada y cortar el riego al alcanzarla. No obstante, la electroválvula incorporará un mecanismo de seguridad y se cerrará igualmente por sí misma pasado un determinado tiempo máximo.
 
 El último flujo escucha los datos que va emitiendo el sensor de caudal mientras transcurre el riego y compara esta cantidad de agua utilizada hasta el momento con el límite que se especificó en la orden de regar. Una vez se supera este límite, se emite a la electroválvula la orden de cerrarse.
 
@@ -167,6 +167,9 @@ Una vez estén en ejecución los contenedores:
 * La consola de *Node-RED* está disponible en `localhost:1880`
 * La base de datos está expuesta en el puerto 5432, con usuario y contraseña `postgres`
 * *Mosquitto* está expuesto en el puerto 1883. Nótese que los dispositivos *IoT* deben apuntar a la ip externa de la máquina y no a *localhost*.
+
+
+**Nota**: Es necesario instalar el módulo `node-red-contrib-postgresql` para poder establecer la conexión con la base de datos. En la consola de *Node-RED* debemos hacer click en el menú superior derecho -> *Manage palette* -> pestaña *Install*, y escribir en el buscador el nombre del módulo. Tras instalarlo, ahora sí el sistema está listo para funcionar.
 
 
 En el directorio `fakeclients` se proveen dos scripts de Python que simulan los dispositivos *IoT*:

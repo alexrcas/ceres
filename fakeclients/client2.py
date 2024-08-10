@@ -9,6 +9,7 @@ def on_connect(client, userdata, flags, reason_code, properties):
     print('connected!')
     client.subscribe('commands/irrigation/on')
     client.subscribe('commands/irrigation/off')
+    client.subscribe('commands/yf/ping')
 
 def on_message(client, userdata, msg):
     global emitting, counter
@@ -18,6 +19,11 @@ def on_message(client, userdata, msg):
     if topic == 'commands/irrigation/on':
         print("Received ON command")
         emitting = True
+
+    elif topic == 'commands/yf/ping':
+        print('Received PING')
+        client.publish('commands/yf/pong')
+
     elif topic == 'commands/irrigation/off':
         print("Received OFF command")
         emitting = False
