@@ -1,0 +1,11 @@
+{
+    "name": "node-red-project",
+    "description": "A Node-RED Project",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "node-red-contrib-postgresql": "~0.14.2",
+        "node-red-dx-postgresql": "~0.0.2",
+        "postgrestor": "~0.0.2"
+    }
+}
