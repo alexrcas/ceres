@@ -145,13 +145,15 @@ Respuesta de GET a `localhost:1880/data`:
 
 En este proyecto se provee un fichero de ejemplo `index.html` que hace una petición *GET* al endpoint anterior mostrando el resultado como un cuadro de mando. Este fichero no sigue las mejores prácticas ni contempla ningún tipo de manejo de errores. Se trata únicamente de un breve ejemplo para mostrar la sencillez y agilidad que puede ofrecer *Node-RED*.
 
-También puuede hacerse que sea el propio *Node-RED* quien sirva este fichero actuando como servidor web con un sencillo flujo que no merece mayor explicación:
+También puuede hacerse que sea el propio *Node-RED* quien sirva este fichero actuando como servidor web cuando se haga una petición *GET* a `/panel` con un sencillo flujo que no merece mayor explicación:
 
 ![](/docs/static-web.png)
 
 
 ![](/docs/cuadro-mando.png)
 (ignórese el realismo de los datos ya que han sido generados sintéticamente)
+
+Hemos conseguido de manera extremadamente sencilla publicar un cuadro de mando que muestre los datos a cualquier dispositivo que acceda a `http://hostNodeRed:1880/panel`
 
 En realidad, en este caso, una aplicación front-end puede ser lo suficiente compleja como para hacer prácticamente lo mismo que una aplicación cliente-servidor, pero esta última podría tener más potencial en cuanto a la posibilidad de tareas automatizadas, notificaciones, etc...
 
