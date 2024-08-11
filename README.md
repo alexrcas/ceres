@@ -147,6 +147,8 @@ En este proyecto se provee un fichero de ejemplo `index.html` que hace una petic
 
 ![](/docs/cuadro-mando.png)
 
+En realidad, en este caso, una aplicación front-end puede ser lo suficiente compleja como para hacer prácticamente lo mismo que una aplicación cliente-servidor, pero es cierto que esta última podría tener más potencial en cuanto a la posibilidad de tareas automatizadas, notificaciones, etc...
+
 
 ### Backoffice
 
