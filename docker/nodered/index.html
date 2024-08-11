@@ -15,62 +15,20 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Ceres</title>
     <style>
-        /* Estilo para el contenedor principal */
-        .container-fluid {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-        }
-
         /* Estilo para la cabecera fija */
-        header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: #333;
-            color: white;
-            z-index: 1000;
-            /* Asegura que la cabecera esté sobre otros contenidos */
-        }
-
-        /* Estilo para el contenido de la página */
-        .content {
-            margin-top: 60px;
-            /* Ajusta este valor según la altura de la cabecera */
-            flex: 1;
-        }
-
-        .row {
-            display: flex;
-            height: 50%;
-            /* Ajustar según el diseño deseado */
-        }
-
-        .col-6 {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .col-6 div {
-            width: 100%;
-            height: 100%;
-        }
     </style>
 </head>
 
 <body>
 
     <header>
-        <div class="d-flex py-2 align-items-baseline justify-content-between px-3">
+        <div class="d-flex py-2 align-items-baseline justify-content-between px-3 bg-dark">
 
             <div class="d-flex align-items-baseline">
-                <h4 class="ms-4">
-                    <i class="fa-solid fa-temperature-three-quarters me-2"></i><span id="lastTemp"></span>ºC
-                    <i class="fa-solid fa-smog ms-4 me-2"></i><span id="lastHum"></span>%
-                    <i class="fa-solid fa-seedling ms-4 me-2"></i><span id="lastTerr"></span>%
+                <h4 class="ms-4 text-light">
+                    <i class="fa-solid fa-temperature-three-quarters me-2 text-light"></i><span id="lastTemp"></span>ºC
+                    <i class="fa-solid fa-smog ms-4 me-2 text-light"></i><span id="lastHum"></span>%
+                    <i class="fa-solid fa-seedling ms-4 me-2 text-light"></i><span id="lastTerr"></span>%
                 </h4>
             </div>
 
@@ -80,25 +38,52 @@
 
     <div class="container-fluid">
 
-        <div class="content">
+        <div class="row mt-4">
 
-            <div class="row">
-                <div class="col-6">
-                    <div id="tester"></div>
-                </div>
-                <div class="col-6">
-                    <div id="tester2"></div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-6">
-                    <div id="tester3"></div>
-                </div>
-                <div class="col-6">
-                    <div id="tester4"></div>
-                </div>
-            </div>
+            <section>
+                <!-- Row -->
+                <div class="row">
+                    <!-- Column -->
+                    <div class="col-md-1">
+
+                        <div class="nav nav-pills d-sm-flex flex-md-column">
+                            <h6 class="nav-link mouse-enter active" data-bs-toggle="pill" data-bs-target="#tab1"
+                                role="tab" aria-controls="tab1" aria-selected="false">Temp. Aire</h6>
+                            <h6 class="nav-link mouse-enter" data-bs-toggle="pill" data-bs-target="#tab2" role="tab"
+                                aria-controls="tab2" aria-selected="true">Hum. Aire</h6>
+                            <h6 class="nav-link mouse-enter" data-bs-toggle="pill" data-bs-target="#tab3" role="tab"
+                                aria-controls="tab3" aria-selected="false">Hum. Suelo</h6>
+                            <h6 class="nav-link mouse-enter" data-bs-toggle="pill" data-bs-target="#tab4" role="tab"
+                                aria-controls="tab4" aria-selected="false">Riegos</h6>
+                        </div>
+                    </div>
+                    <!-- Column -->
+                    <div class="col-md-11">
+                        <!-- Tabs Content -->
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1">
+                                <div id="pl-tab1"></div>
+                            </div>
+
+                            <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2">
+                                <div id="pl-tab2"></div>
+                            </div>
+
+                            <div class="tab-pane fade" id="tab3" role="tabpanel" aria-labelledby="tab3">
+                                <div id="pl-tab3"></div>
+                            </div>
+
+                            <div class="tab-pane fade" id="tab4" role="tabpanel" aria-labelledby="tab4">
+                                <div id="pl-tab4"></div>
+                            </div>
+                        </div>
+                    </div>
+            </section>
+
+
+
         </div>
+
     </div>
 
 
@@ -154,7 +139,7 @@
                 },
             };
 
-            Plotly.newPlot('tester', [trace], layout, { scrollZoom: true, displayModeBar: false });
+            Plotly.newPlot('pl-tab1', [trace], layout, { scrollZoom: true, displayModeBar: false });
         }
 
 
@@ -190,7 +175,7 @@
                 },
             };
 
-            Plotly.newPlot('tester2', [trace], layout, { scrollZoom: true, displayModeBar: false });
+            Plotly.newPlot('pl-tab2', [trace], layout, { scrollZoom: true, displayModeBar: false });
         }
 
 
@@ -226,7 +211,7 @@
                 }
             };
 
-            Plotly.newPlot('tester3', plotData, layout, { scrollZoom: true, displayModeBar: false });
+            Plotly.newPlot('pl-tab3', plotData, layout, { scrollZoom: true, displayModeBar: false });
 
         }
 
@@ -260,7 +245,7 @@
                 }
             };
 
-            Plotly.newPlot('tester4', plotData, layout, { scrollZoom: true, displayModeBar: false });
+            Plotly.newPlot('pl-tab4', plotData, layout, { scrollZoom: true, displayModeBar: false });
 
         }
 
@@ -287,7 +272,7 @@
 
         (async () => {
 
-            const data = await fetch('http://localhost:1880/data')
+            const data = await fetch('/data')
             const json = await data.json()
 
             loadTempData(json);
@@ -297,6 +282,14 @@
             loadLastData(json);
 
         })();
+
+
+        document.querySelectorAll('[data-bs-toggle="pill"]').forEach(function (tab) {
+            tab.addEventListener('shown.bs.tab', function (e) {
+                const tabId = e.target.getAttribute('data-bs-target').substring(1);
+                Plotly.Plots.resize(document.getElementById('pl-' + tabId));
+            });
+        });
 
     </script>
 

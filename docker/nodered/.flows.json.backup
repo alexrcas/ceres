@@ -363,7 +363,7 @@
         "type": "postgresql",
         "z": "8dea386e62742915",
         "name": "getData",
-        "query": "SELECT * FROM MESSAGE;",
+        "query": "SELECT * FROM MESSAGE ORDER BY ID ASC;",
         "postgreSQLConfig": "413224891f7d0348",
         "split": false,
         "rowsPerMsg": 1,
@@ -424,6 +424,54 @@
         "broker": "22206f91c875d542",
         "x": 490,
         "y": 480,
+        "wires": []
+    },
+    {
+        "id": "5a3a7557dc0ac644",
+        "type": "http in",
+        "z": "8dea386e62742915",
+        "name": "",
+        "url": "panel",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 200,
+        "y": 760,
+        "wires": [
+            [
+                "10cbb387d802c6a5"
+            ]
+        ]
+    },
+    {
+        "id": "10cbb387d802c6a5",
+        "type": "file in",
+        "z": "8dea386e62742915",
+        "name": "",
+        "filename": "/data/index.html",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 400,
+        "y": 760,
+        "wires": [
+            [
+                "ca2a6e5bc0a653c5"
+            ]
+        ]
+    },
+    {
+        "id": "ca2a6e5bc0a653c5",
+        "type": "http response",
+        "z": "8dea386e62742915",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 590,
+        "y": 760,
         "wires": []
     }
 ]
