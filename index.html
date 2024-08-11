@@ -10,7 +10,9 @@
         integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
         crossorigin="anonymous"></script>
     <script src="https://cdn.plot.ly/plotly-2.34.0.min.js" charset="utf-8"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+        integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Ceres</title>
     <style>
         /* Estilo para el contenedor principal */
@@ -30,18 +32,21 @@
             width: 100%;
             background-color: #333;
             color: white;
-            z-index: 1000; /* Asegura que la cabecera esté sobre otros contenidos */
+            z-index: 1000;
+            /* Asegura que la cabecera esté sobre otros contenidos */
         }
 
         /* Estilo para el contenido de la página */
         .content {
-            margin-top: 60px; /* Ajusta este valor según la altura de la cabecera */
+            margin-top: 60px;
+            /* Ajusta este valor según la altura de la cabecera */
             flex: 1;
         }
 
         .row {
             display: flex;
-            height: 50%; /* Ajustar según el diseño deseado */
+            height: 50%;
+            /* Ajustar según el diseño deseado */
         }
 
         .col-6 {
@@ -63,13 +68,13 @@
 
             <div class="d-flex align-items-baseline">
                 <h4 class="ms-4">
-                    <i class="fa-solid fa-temperature-three-quarters me-2"></i><span id="lastTemp"></span>ºC 
+                    <i class="fa-solid fa-temperature-three-quarters me-2"></i><span id="lastTemp"></span>ºC
                     <i class="fa-solid fa-smog ms-4 me-2"></i><span id="lastHum"></span>%
                     <i class="fa-solid fa-seedling ms-4 me-2"></i><span id="lastTerr"></span>%
                 </h4>
             </div>
 
-                <button class="btn btn-primary ms-4">Activar Riego</button>
+            <button class="btn btn-primary ms-4">Activar Riego</button>
         </div>
     </header>
 
@@ -100,6 +105,23 @@
     <script>
 
 
+        const calculateRange = () => {
+
+            const now = new Date();
+
+            const yesterdaySameTime = new Date(now);
+            yesterdaySameTime.setDate(now.getDate() - 1);
+
+            const endOfToday = new Date(now);
+            endOfToday.setHours(23, 59, 59, 999);
+
+            const formattedYesterdaySameTime = yesterdaySameTime.toISOString();
+            const formattedEndOfToday = endOfToday.toISOString();
+
+            return [formattedYesterdaySameTime, formattedEndOfToday];
+        }
+
+
         const loadTempData = json => {
 
             const dateArray = json
@@ -120,25 +142,11 @@
                 yaxis: 'y'
             }
 
-            const now = new Date();
-
-            // Obtener la fecha y hora de ayer a la misma hora
-            const yesterdaySameTime = new Date(now);
-            yesterdaySameTime.setDate(now.getDate() - 1);
-
-            // Establecer la fecha de hoy a las 23:59
-            const endOfToday = new Date(now);
-            endOfToday.setHours(23, 59, 59, 999);
-
-            // Formatear las fechas para que coincidan con el formato en `dateArray`
-            const formattedYesterdaySameTime = yesterdaySameTime.toISOString();
-            const formattedEndOfToday = endOfToday.toISOString();
-
             const layout = {
                 title: '',
                 showlegend: false,
                 xaxis: {
-                    range: [formattedYesterdaySameTime, formattedEndOfToday],
+                    range: calculateRange(),
                     tickformat: '%H:%M\n%d %b'
                 },
                 yaxis: {
@@ -170,25 +178,11 @@
                 yaxis: 'y'
             }
 
-            const now = new Date();
-
-            // Obtener la fecha y hora de ayer a la misma hora
-            const yesterdaySameTime = new Date(now);
-            yesterdaySameTime.setDate(now.getDate() - 1);
-
-            // Establecer la fecha de hoy a las 23:59
-            const endOfToday = new Date(now);
-            endOfToday.setHours(23, 59, 59, 999);
-
-            // Formatear las fechas para que coincidan con el formato en `dateArray`
-            const formattedYesterdaySameTime = yesterdaySameTime.toISOString();
-            const formattedEndOfToday = endOfToday.toISOString();
-
             const layout = {
                 title: '',
                 showlegend: false,
                 xaxis: {
-                    range: [formattedYesterdaySameTime, formattedEndOfToday],
+                    range: calculateRange(),
                     tickformat: '%H:%M\n%d %b'
                 },
                 yaxis: {
@@ -223,7 +217,7 @@
 
             const layout = {
                 title: '',
-                showlegend: true,
+                range: calculateRange(),
                 xaxis: {
                     tickformat: '%H:%M\n%d %b'
                 },
@@ -258,7 +252,6 @@
 
             const layout = {
                 title: '',
-                showlegend: true,
                 xaxis: {
                     tickformat: '%H:%M\n%d %b'
                 },
@@ -267,7 +260,7 @@
                 }
             };
 
-            Plotly.newPlot('tester4', plotData, layout, { scrollZoom: true, displayModeBar: false});
+            Plotly.newPlot('tester4', plotData, layout, { scrollZoom: true, displayModeBar: false });
 
         }
 
@@ -275,19 +268,19 @@
             const lastDHTData = json
                 .filter(el => el.topic === 'DHT')
                 .pop()
-                
-                const lastTemp = JSON.parse(lastDHTData.content).temp;
-                const lastHum = JSON.parse(lastDHTData.content).hum;
 
-                document.getElementById('lastTemp').innerHTML = lastTemp;
-                document.getElementById('lastHum').innerHTML = lastHum;
+            const lastTemp = JSON.parse(lastDHTData.content).temp;
+            const lastHum = JSON.parse(lastDHTData.content).hum;
 
-                const lastFCData = json
+            document.getElementById('lastTemp').innerHTML = lastTemp;
+            document.getElementById('lastHum').innerHTML = lastHum;
+
+            const lastFCData = json
                 .filter(el => el.topic === 'FC')
                 .pop()
 
-                const lastTerr = JSON.parse(lastFCData.content).terr;
-                document.getElementById('lastTerr').innerHTML = lastTerr;
+            const lastTerr = JSON.parse(lastFCData.content).terr;
+            document.getElementById('lastTerr').innerHTML = lastTerr;
 
         }
 

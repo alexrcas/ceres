@@ -1,0 +1,429 @@
+[
+    {
+        "id": "8dea386e62742915",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "22206f91c875d542",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "mosquitto",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "413224891f7d0348",
+        "type": "postgreSQLConfig",
+        "name": "insertInDatabase",
+        "host": "postgres",
+        "hostFieldType": "str",
+        "port": "5432",
+        "portFieldType": "num",
+        "database": "postgres",
+        "databaseFieldType": "str",
+        "ssl": "false",
+        "sslFieldType": "bool",
+        "applicationName": "",
+        "applicationNameType": "str",
+        "max": "10",
+        "maxFieldType": "num",
+        "idle": "1000",
+        "idleFieldType": "num",
+        "connectionTimeout": "10000",
+        "connectionTimeoutFieldType": "num",
+        "user": "postgres",
+        "userFieldType": "str",
+        "password": "postgres",
+        "passwordFieldType": "str"
+    },
+    {
+        "id": "476cf3f5126c465b",
+        "type": "mqtt out",
+        "z": "8dea386e62742915",
+        "name": "",
+        "topic": "commands/irrigation/off",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "22206f91c875d542",
+        "x": 710,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "67b1275723849bc2",
+        "type": "function",
+        "z": "8dea386e62742915",
+        "name": "storeWaterLimit",
+        "func": "\nflow.set('waterLimit', msg.payload.waterLimit)\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 420,
+        "wires": [
+            [
+                "7e87a5823ef72845"
+            ]
+        ]
+    },
+    {
+        "id": "7e87a5823ef72845",
+        "type": "mqtt out",
+        "z": "8dea386e62742915",
+        "name": "",
+        "topic": "commands/yf/ping",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "22206f91c875d542",
+        "x": 690,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "d29e9e3d1754643c",
+        "type": "switch",
+        "z": "8dea386e62742915",
+        "name": "checkWaterLimit",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "waterLimit",
+                "vt": "flow"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 470,
+        "y": 560,
+        "wires": [
+            [
+                "476cf3f5126c465b"
+            ]
+        ]
+    },
+    {
+        "id": "59765820c2290ba6",
+        "type": "mqtt in",
+        "z": "8dea386e62742915",
+        "name": "",
+        "topic": "sensors/dth/data",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "22206f91c875d542",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 220,
+        "y": 160,
+        "wires": [
+            [
+                "f4fda9e671ea5ba6"
+            ]
+        ]
+    },
+    {
+        "id": "085cd3c589765864",
+        "type": "mqtt in",
+        "z": "8dea386e62742915",
+        "name": "",
+        "topic": "sensors/fc/data",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "22206f91c875d542",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 220,
+        "y": 220,
+        "wires": [
+            [
+                "35f4da47546e6cad"
+            ]
+        ]
+    },
+    {
+        "id": "9f8c9f5486e3d44b",
+        "type": "mqtt in",
+        "z": "8dea386e62742915",
+        "name": "",
+        "topic": "sensors/yf/data/flow",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "22206f91c875d542",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 230,
+        "y": 560,
+        "wires": [
+            [
+                "d29e9e3d1754643c"
+            ]
+        ]
+    },
+    {
+        "id": "303e36fb1f0e60cd",
+        "type": "mqtt in",
+        "z": "8dea386e62742915",
+        "name": "",
+        "topic": "sensors/yf/data/irrigation",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "22206f91c875d542",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 250,
+        "y": 280,
+        "wires": [
+            [
+                "fa62b3710fdba5c4"
+            ]
+        ]
+    },
+    {
+        "id": "a2bdf1fe12a2d9d0",
+        "type": "http in",
+        "z": "8dea386e62742915",
+        "name": "irrigation",
+        "url": "api/irrigation",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 200,
+        "y": 420,
+        "wires": [
+            [
+                "67b1275723849bc2",
+                "4a4e50de2f199033"
+            ]
+        ]
+    },
+    {
+        "id": "4a4e50de2f199033",
+        "type": "http response",
+        "z": "8dea386e62742915",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 440,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "afcd26908147c8f0",
+        "type": "postgresql",
+        "z": "8dea386e62742915",
+        "name": "insertInDatabase",
+        "query": "insert into message(topic, content)\nvalues('{{msg.topic}}', '{{msg.payload}}')",
+        "postgreSQLConfig": "413224891f7d0348",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 870,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f4fda9e671ea5ba6",
+        "type": "function",
+        "z": "8dea386e62742915",
+        "name": "paramToObject",
+        "func": "let jsonObj = {};\n\n\nmsg.payload.split('&').forEach(param => {\n    let [key, value] = param.split('=');\n    jsonObj[key] = value;\n});\n\nmsg.topic = 'DHT';\nmsg.payload = jsonObj;\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 160,
+        "wires": [
+            [
+                "ccaf25fc7f77bd60"
+            ]
+        ]
+    },
+    {
+        "id": "35f4da47546e6cad",
+        "type": "function",
+        "z": "8dea386e62742915",
+        "name": "paramToObject",
+        "func": "let jsonObj = {};\n\n\nmsg.payload.split('&').forEach(param => {\n    let [key, value] = param.split('=');\n    jsonObj[key] = value;\n});\n\nmsg.topic = 'FC';\nmsg.payload = jsonObj;\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 220,
+        "wires": [
+            [
+                "ccaf25fc7f77bd60"
+            ]
+        ]
+    },
+    {
+        "id": "fa62b3710fdba5c4",
+        "type": "function",
+        "z": "8dea386e62742915",
+        "name": "paramToObject",
+        "func": "let jsonObj = {};\n\n\nmsg.payload.split('&').forEach(param => {\n    let [key, value] = param.split('=');\n    jsonObj[key] = value;\n});\n\nmsg.topic = 'YF';\nmsg.payload = jsonObj;\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 280,
+        "wires": [
+            [
+                "ccaf25fc7f77bd60"
+            ]
+        ]
+    },
+    {
+        "id": "ccaf25fc7f77bd60",
+        "type": "json",
+        "z": "8dea386e62742915",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 670,
+        "y": 220,
+        "wires": [
+            [
+                "afcd26908147c8f0"
+            ]
+        ]
+    },
+    {
+        "id": "010475bde782eaab",
+        "type": "http in",
+        "z": "8dea386e62742915",
+        "name": "",
+        "url": "data",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 200,
+        "y": 640,
+        "wires": [
+            [
+                "377a918091d0a153"
+            ]
+        ]
+    },
+    {
+        "id": "377a918091d0a153",
+        "type": "postgresql",
+        "z": "8dea386e62742915",
+        "name": "getData",
+        "query": "SELECT * FROM MESSAGE;",
+        "postgreSQLConfig": "413224891f7d0348",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 380,
+        "y": 640,
+        "wires": [
+            [
+                "99a5ec91ca00a1e7"
+            ]
+        ]
+    },
+    {
+        "id": "99a5ec91ca00a1e7",
+        "type": "http response",
+        "z": "8dea386e62742915",
+        "name": "",
+        "statusCode": "200",
+        "headers": {},
+        "x": 560,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "bc47394842f60a4a",
+        "type": "mqtt in",
+        "z": "8dea386e62742915",
+        "name": "",
+        "topic": "commands/yf/pong",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "22206f91c875d542",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 230,
+        "y": 480,
+        "wires": [
+            [
+                "8756c34a79c20210"
+            ]
+        ]
+    },
+    {
+        "id": "8756c34a79c20210",
+        "type": "mqtt out",
+        "z": "8dea386e62742915",
+        "name": "",
+        "topic": "commands/irrigation/on",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "22206f91c875d542",
+        "x": 490,
+        "y": 480,
+        "wires": []
+    }
+]

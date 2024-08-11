@@ -118,7 +118,7 @@ En defintiva, la idea es capturar y registrar los eventos que han ocurrido en la
 
 #### Apunte: una API simple incorporada
 
-Simplemente con crear un flujo que escuche una petición *GET* en */data* y hacer que retorne el resultado de ejecutar un `SELECT * FROM MESSAGE` ya lograríamos exponer los eventos registrados para representarlos en cualquier simple aplicación *front-end* de desarrollo propio o un cuadro de mando de terceros con la posibilidad de consumir estoa datos.
+Simplemente con crear un flujo que escuche una petición *GET* en */data* y hacer que retorne el resultado de ejecutar un `SELECT * FROM MESSAGE` ya lograríamos exponer los eventos registrados para ser representados en una sencilla aplicación front-end.
 
 ![](/docs/nodered-api.png)
 
@@ -142,6 +142,10 @@ Respuesta de GET a `localhost:1880/data`:
     },
     ...
 ```
+
+En este proyecto se provee un fichero de ejemplo `index.html` que hace una petición *GET* a `localhost:1880/data` mostrando el resultado como un cuadro de mando. Este fichero no sigue las mejores prácticas ni contempla ningún tipo de manejo de errores. Se trata únicamente de un breve ejemplo para mostrar la sencillez y agilidad que puede ofrecer *Node-RED*.
+
+![](/docs/cuadro-mando.png)
 
 
 ### Backoffice
