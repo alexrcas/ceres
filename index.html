@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.plot.ly/plotly-2.34.0.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Ceres</title>
+    <style>
+        /* Estilo para el contenedor principal */
+        .container-fluid {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Estilo para la cabecera fija */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            z-index: 1000; /* Asegura que la cabecera esté sobre otros contenidos */
+        }
+
+        /* Estilo para el contenido de la página */
+        .content {
+            margin-top: 60px; /* Ajusta este valor según la altura de la cabecera */
+            flex: 1;
+        }
+
+        .row {
+            display: flex;
+            height: 50%; /* Ajustar según el diseño deseado */
+        }
+
+        .col-6 {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .col-6 div {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="d-flex py-2 align-items-baseline justify-content-between px-3">
+
+            <div class="d-flex align-items-baseline">
+                <h4 class="ms-4">
+                    <i class="fa-solid fa-temperature-three-quarters me-2"></i><span id="lastTemp"></span>ºC 
+                    <i class="fa-solid fa-smog ms-4 me-2"></i><span id="lastHum"></span>%
+                    <i class="fa-solid fa-seedling ms-4 me-2"></i><span id="lastTerr"></span>%
+                </h4>
+            </div>
+
+                <button class="btn btn-primary ms-4">Activar Riego</button>
+        </div>
+    </header>
+
+    <div class="container-fluid">
+
+        <div class="content">
+
+            <div class="row">
+                <div class="col-6">
+                    <div id="tester"></div>
+                </div>
+                <div class="col-6">
+                    <div id="tester2"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div id="tester3"></div>
+                </div>
+                <div class="col-6">
+                    <div id="tester4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+
+        const loadTempData = json => {
+
+            const dateArray = json
+                .filter(el => el.topic === 'DHT')
+                .map(el => el.created);
+
+            const tempArray = json
+                .filter(el => el.topic === 'DHT')
+                .map(el => JSON.parse(el.content))
+                .map(el => el.temp)
+
+            const trace = {
+                x: [...dateArray],
+                y: [...tempArray],
+                fill: 'tonexty',
+                type: 'scatter',
+                mode: 'lines+markers',
+                yaxis: 'y'
+            }
+
+            const now = new Date();
+
+            // Obtener la fecha y hora de ayer a la misma hora
+            const yesterdaySameTime = new Date(now);
+            yesterdaySameTime.setDate(now.getDate() - 1);
+
+            // Establecer la fecha de hoy a las 23:59
+            const endOfToday = new Date(now);
+            endOfToday.setHours(23, 59, 59, 999);
+
+            // Formatear las fechas para que coincidan con el formato en `dateArray`
+            const formattedYesterdaySameTime = yesterdaySameTime.toISOString();
+            const formattedEndOfToday = endOfToday.toISOString();
+
+            const layout = {
+                title: '',
+                showlegend: false,
+                xaxis: {
+                    range: [formattedYesterdaySameTime, formattedEndOfToday],
+                    tickformat: '%H:%M\n%d %b'
+                },
+                yaxis: {
+                    title: 'Temp. Aire Cº'
+                },
+            };
+
+            Plotly.newPlot('tester', [trace], layout, { scrollZoom: true, displayModeBar: false });
+        }
+
+
+        const loadHumData = json => {
+
+            const dateArray = json
+                .filter(el => el.topic === 'DHT')
+                .map(el => el.created);
+
+            const humArray = json
+                .filter(el => el.topic === 'DHT')
+                .map(el => JSON.parse(el.content))
+                .map(el => el.hum)
+
+            const trace = {
+                x: [...dateArray],
+                y: [...humArray],
+                fill: 'tonexty',
+                type: 'scatter',
+                mode: 'lines+markers',
+                yaxis: 'y'
+            }
+
+            const now = new Date();
+
+            // Obtener la fecha y hora de ayer a la misma hora
+            const yesterdaySameTime = new Date(now);
+            yesterdaySameTime.setDate(now.getDate() - 1);
+
+            // Establecer la fecha de hoy a las 23:59
+            const endOfToday = new Date(now);
+            endOfToday.setHours(23, 59, 59, 999);
+
+            // Formatear las fechas para que coincidan con el formato en `dateArray`
+            const formattedYesterdaySameTime = yesterdaySameTime.toISOString();
+            const formattedEndOfToday = endOfToday.toISOString();
+
+            const layout = {
+                title: '',
+                showlegend: false,
+                xaxis: {
+                    range: [formattedYesterdaySameTime, formattedEndOfToday],
+                    tickformat: '%H:%M\n%d %b'
+                },
+                yaxis: {
+                    title: 'Hum. Aire %'
+                },
+            };
+
+            Plotly.newPlot('tester2', [trace], layout, { scrollZoom: true, displayModeBar: false });
+        }
+
+
+        const loadTerrainHumData = json => {
+
+            const dateArray = json
+                .filter(el => el.topic === 'FC')
+                .map(el => el.created);
+
+            const valueArray = json
+                .filter(el => el.topic === 'FC')
+                .map(el => JSON.parse(el.content))
+                .map(el => el.terr)
+
+            const trace = {
+                x: [...dateArray],
+                y: [...valueArray],
+                mode: 'lines+markers',
+                type: 'scatter',
+                fill: 'tonexty'
+            }
+
+            const plotData = [trace];
+
+            const layout = {
+                title: '',
+                showlegend: true,
+                xaxis: {
+                    tickformat: '%H:%M\n%d %b'
+                },
+                yaxis: {
+                    title: 'Hum. Suelo %'
+                }
+            };
+
+            Plotly.newPlot('tester3', plotData, layout, { scrollZoom: true, displayModeBar: false });
+
+        }
+
+        const loadWateringData = json => {
+
+            const dateArray = json
+                .filter(el => el.topic === 'YF')
+                .map(el => el.created);
+
+            const irrigationArray = json
+                .filter(el => el.topic === 'YF')
+                .map(el => JSON.parse(el.content))
+                .map(el => el.irrigation)
+
+            const trace = {
+                x: [...dateArray],
+                y: [...irrigationArray],
+                mode: 'lines+markers',
+                type: 'bar',
+            }
+
+            const plotData = [trace];
+
+            const layout = {
+                title: '',
+                showlegend: true,
+                xaxis: {
+                    tickformat: '%H:%M\n%d %b'
+                },
+                yaxis: {
+                    title: 'Agua empleada L.'
+                }
+            };
+
+            Plotly.newPlot('tester4', plotData, layout, { scrollZoom: true, displayModeBar: false});
+
+        }
+
+        const loadLastData = json => {
+            const lastDHTData = json
+                .filter(el => el.topic === 'DHT')
+                .pop()
+                
+                const lastTemp = JSON.parse(lastDHTData.content).temp;
+                const lastHum = JSON.parse(lastDHTData.content).hum;
+
+                document.getElementById('lastTemp').innerHTML = lastTemp;
+                document.getElementById('lastHum').innerHTML = lastHum;
+
+                const lastFCData = json
+                .filter(el => el.topic === 'FC')
+                .pop()
+
+                const lastTerr = JSON.parse(lastFCData.content).terr;
+                document.getElementById('lastTerr').innerHTML = lastTerr;
+
+        }
+
+
+        (async () => {
+
+            const data = await fetch('http://localhost:1880/data')
+            const json = await data.json()
+
+            loadTempData(json);
+            loadHumData(json);
+            loadTerrainHumData(json);
+            loadWateringData(json);
+            loadLastData(json);
+
+        })();
+
+    </script>
+
+</body>
+
+</html>
