@@ -4,20 +4,19 @@ Ceres es un sistema para monitorizar y gestionar un huerto casero, registrando t
 
 ## Arquitectura y tecnologías
 
-Para la comunicación entre los diferentes dispositivos *IoT* se utilizará el protocolo *MQTT*, habitual en estos casos por su sencillez y ligereza. La lógica y comunicación entre dispositivos será realizada por *Node-RED*, herramienta también ampliamente usada en este campo que permite de manera muy gráfica y simple llevar a cabo estas tareas. Será necesaria también la existencia de un broker de mensajes como *Mosquitto* y por último, una base de datos como *Postgres* para almacenar la información y sobre la que se sustenterá el backoffice, que se mencionará más adelante.
+Para la comunicación entre los diferentes dispositivos *IoT* se utilizará el protocolo *MQTT*, habitual en estos casos por su sencillez y ligereza. La lógica y comunicación entre dispositivos será realizada por *Node-RED*, herramienta también ampliamente usada en este campo que permite de manera gráfica y simple llevar a cabo estas tareas. Será necesaria también la existencia de un broker de mensajes como *Mosquitto* y por último, una base de datos como *Postgres* para almacenar la información y sobre la que se sustenterá el backoffice, que se mencionará más adelante.
 
 Para facilitar el despliegue e instalación de todos estos elementos se utiliza docker compose. Se provee un fichero de despliegue `docker-compose.yml` que ya contiene todas las configuraciones necesarias de los diferentes sistemas y las interconexiones entre estos.
 
 ![](/docs/arquitectura.jpg)
 
-Uno de los planteamientos del proyecto es separar la implementación de un backoffice del resto del sistema. Es decir, simplemente con desplegar el docker-compose el sistema quedaría operativo y funcionando, siendo otra fase posterior y desacoplada la de desarrollar un backoffice que explotase y presentase la información que ya contendría la base de datos (que se inicia con un esquema mínimo como se explica en la siguiente sección) o permitiese activar el riego en su interfaz gráfica (o tomase decisiones en base a datos para activarlo de forma autónoma).
-
+Uno de los planteamientos del proyecto es separar la implementación de un backoffice del resto del sistema. Es decir, simplemente con desplegar el docker-compose el sistema quedaría operativo y funcionando, registrando los datos y permitiendo activar el riego, siendo otra fase posterior y desacoplada la de desarrollar un backoffice que explote y presente la información, o que además de permitir activar el riego desde su interfaz pueda hacerlo de forma autónoma o programada en base a ciertas reglas o datos de los sensores.
 
 ## Sistemas
 
 ### Sensores
 
-Se utilizan una serie de dispositivos que serán descritos más adelante en la sección de *Hardware*, pero nótese que en realidad podría utilizarse cualquier hardware siempre que se comporte como describe esta sección. De hecho, como se detalla en la sección *Despliegue*, se provee un código Python que simula virtualmente estos dispositivos para poder probar de manera simple el correcto funcionamiento del sistema.
+Se utilizan una serie de dispositivos que serán descritos más adelante en la sección de *Hardware*, pero en realidad podría utilizarse cualquier hardware siempre que se comporte como describe esta sección. De hecho, como se detalla en la sección *Despliegue*, se provee un código Python que simula virtualmente estos dispositivos para poder probar de manera simple el correcto funcionamiento del sistema.
 
 #### Sensor DHT
 Mide la temperatura y la emitad del aire. Publica un mensaje en el topic `sensors/dht/data` con el formato `id={id}&temp={temp}&hum={hum}`. Donde:
@@ -46,7 +45,7 @@ id=defg456&terr=58
 
 Este sensor mide el caudal de agua que lo atraviesa, pero se ha programado para que utilice el concepto de *riego*. Un riego viene determinado por un flujo de agua que atraviesa el sensor de manera ininterrumpida, desde que comienza hasta que termina. Si una flujo de agua atraviesa el sensor y luego se detiene, esto se considera un riego. Si posteriormente se repite la operación, esto se considera otro riego.
 
-Así, este sensor emite dos tipos de mensajes. Por un lado, la cantidad de agua que se va acumulando en el riego actual en `sensors/yf/data/flow` sin formato, siendo únicamente un número decimal.
+Así, este sensor emite dos tipos de mensajes. Por un lado, la cantidad de agua que se va acumulando en el riego actual en el topic `sensors/yf/data/flow` sin formato, siendo únicamente un número decimal.
 
 Por otro lado, una vez terminado el riego publica un mensaje en el topic `sensors/yf/data/irrigation` con la cantidad total de agua empleada en dicho riego. Este mensaje tiene el formato `id={id}&irrigation={irrigation}`. Donde:
 
@@ -71,7 +70,7 @@ id=wxyz567&irrigation=0.5
 
 #### Relé o electroválvula
 
-Este dispositivo se limita abrir el paso del agua. Está suscrito a los topics `commands/irrigation/on` y `commands/irrigation/off`
+Este dispositivo se limita abrir o cerrar el paso del agua. Está suscrito a los topics `commands/irrigation/on` y `commands/irrigation/off`
 
 
 ### Node-RED
@@ -82,13 +81,13 @@ En base a lo descrito anteriomente, los flujos usados en Node-RED son muy simple
 
 Los tres flujos superiores se limitan a recibir los mensajes vistos en la sección anterior, convertirlos de formato *queryParam* a formato *JSON* y almacenarlos tal cual son recibidos en una tabla de mensajes en base de datos.
 
-El cuarto flujo sirve para escuchar la petición para inicar el riego. Esta petición es una llamada *POST* al endpoint *nodered/api/irrigation* con un cuerpo que indiga la cantidad de agua a utilizar en el riego, por ejemplo:
+El cuarto flujo sirve para escuchar la petición para inicar el riego. Esta petición es una llamada *POST* al endpoint *nodered/api/irrigation* con un cuerpo que indica la cantidad de agua a utilizar en el riego, por ejemplo:
 
 ```
 "waterLimit": 2.5
 ```
 
-Posteriormente hace tres cosas: devuelve un *OK* al servidor, persiste la cantidad de agua a utilizar en el riego, y activa la electroválvula para que el agua empiece a fluir. Sin embargo, esta activación de la electroválvula no se hace directamente sino de dos pasos. Obsérvese que en lugar de activar directamente el riego, se hace un *ping* al sensor de caudal. En el flujo inmediatamente inferior, se escucha la respuesta que devuelve este último sensor y acto seguido entonces sí, se activa el riego. Esto se hace para no activar el riego si el sensor de caudal no está operativo ya que entonces no podría controlarse la cantidad de agua especificada y cortar el riego al alcanzarla. No obstante, la electroválvula incorporará un mecanismo de seguridad y se cerrará igualmente por sí misma pasado un determinado tiempo máximo.
+Posteriormente hace tres cosas: devuelve un *OK* al servidor, persiste la cantidad de agua a utilizar en el riego, y activa la electroválvula para que el agua empiece a fluir. Sin embargo, esta activación de la electroválvula no se hace directamente sino de dos pasos. Obsérvese que en lugar de activar directamente el riego, se hace un *ping* al sensor de caudal. En el flujo inmediatamente inferior, se escucha la respuesta que devuelve este último sensor y acto seguido entonces sí, se activa el riego. Esto se hace para no activar el riego si el sensor de caudal no está operativo ya que entonces no podría controlarse la cantidad de agua que se está usando y cortar el riego al alcanzar el límite especificado. No obstante, la electroválvula incorporará un mecanismo de seguridad y se cerrará igualmente por sí misma pasado un determinado tiempo máximo.
 
 El último flujo escucha los datos que va emitiendo el sensor de caudal mientras transcurre el riego y compara esta cantidad de agua utilizada hasta el momento con el límite que se especificó en la orden de regar. Una vez se supera este límite, se emite a la electroválvula la orden de cerrarse.
 
