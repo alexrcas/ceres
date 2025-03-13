@@ -436,7 +436,7 @@
         "upload": false,
         "swaggerDoc": "",
         "x": 200,
-        "y": 760,
+        "y": 720,
         "wires": [
             [
                 "10cbb387d802c6a5"
@@ -456,7 +456,7 @@
         "encoding": "none",
         "allProps": false,
         "x": 400,
-        "y": 760,
+        "y": 720,
         "wires": [
             [
                 "ca2a6e5bc0a653c5"
@@ -471,7 +471,44 @@
         "statusCode": "",
         "headers": {},
         "x": 590,
-        "y": 760,
+        "y": 720,
         "wires": []
+    },
+    {
+        "id": "aba853ead8d658dc",
+        "type": "debug",
+        "z": "8dea386e62742915",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 360,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "218105878efc6b56",
+        "type": "mqtt in",
+        "z": "8dea386e62742915",
+        "name": "",
+        "topic": "outTopic",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "22206f91c875d542",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 80,
+        "wires": [
+            [
+                "aba853ead8d658dc"
+            ]
+        ]
     }
 ]

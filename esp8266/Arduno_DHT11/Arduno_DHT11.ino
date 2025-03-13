@@ -1,46 +1,24 @@
-/* DHTServer - ESP8266 Webserver with a DHT sensor as an input
-
-   Based on ESP8266Webserver, DHTexample, and BlinkWithoutDelay (thank you)
-
-   Version 1.0  5/3/2014  Version 1.0   Mike Barela for Adafruit Industries
-*/
 #include <ESP8266WiFi.h>
-#include <WiFiClient.h>
-#include <ESP8266WebServer.h>
-
+#include <PubSubClient.h>  // Include PubSubClient library for MQTT
 #include "DHTesp.h"
-// Replace with your network details
-const char* ssid     = "Red Wifi A_1";
-const char* password = "Turing0906";
 
-ESP8266WebServer server(80);
- 
-// Initialize DHT sensor 
-// NOTE: For working with a faster than ATmega328p 16 MHz Arduino chip, like an ESP8266,
-// you need to increase the threshold for cycle counts considered a 1 or 0.
-// You can do this by passing a 3rd parameter for this threshold.  It's a bit
-// of fiddling to find the right value, but in general the faster the CPU the
-// higher the value.  The default for a 16mhz AVR is a value of 6.  For an
-// Arduino Due that runs at 84mhz a value of 30 works.
-// This is for the ESP8266 processor on ESP-01 
+const char* ssid = "Red Wifi A_1";
+const char* password = "Turing0906";
+const char* mqtt_server = "192.168.0.22";  // Removed port from this line
+
+const char* DEVICE_ID = "esp01dht11a";
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
 DHTesp dht;
- 
-float humidity, temp_f;  // Values read from sensor
-String webString="";     // String to display
-// Generally, you should use "unsigned long" for variables that hold time
-unsigned long previousMillis = 0;        // will store last temp was read
-const long interval = 2000;              // interval at which to read sensor
- 
-void handle_root() {
-  server.send(200, "text/plain", "Hello from the weather esp8266, read from /temp or /humidity");
-  delay(100);
-}
- 
-void setup(void)
-{
-  // You can open the Arduino IDE Serial Monitor window to see what the code is doing
-  Serial.begin(115200);  // Serial connection from ESP-01 via 3.3v console cable
-  dht.setup(2, DHTesp::DHT11); // Connect DHT sensor to GPIO 17
+
+String messageString = "";
+
+void setup(void) {
+  // Initialize serial communication
+  Serial.begin(115200);
+  dht.setup(2, DHTesp::DHT11);  // Connect DHT sensor to GPIO 2 (not GPIO 17 as mentioned)
 
   // Connect to WiFi network
   WiFi.begin(ssid, password);
@@ -51,36 +29,52 @@ void setup(void)
     delay(500);
     Serial.print(".");
   }
+
   Serial.println("");
   Serial.println("DHT Weather Reading Server");
   Serial.print("Connected to ");
   Serial.println(ssid);
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-   
-  server.on("/", handle_root);
-  
-  server.on("/temp", [](){  // if you add this subdirectory to your webserver call, you get text below :)    // read sensor
-    webString="Temperature: "+String((int)temp_f)+" F";   // Arduino has a hard time with float to string
-    server.send(200, "text/plain", webString);            // send to someones browser when asked
-  });
 
-  server.on("/humidity", [](){  // if you add this subdirectory to your webserver call, you get text below :)
+  // Setup MQTT
+  client.setServer(mqtt_server, 1883);
+
   delay(dht.getMinimumSamplingPeriod());
+}
 
+void loop(void) {
+  if (!client.connected()) {
+    reconnect();  // Reconnect to MQTT broker if disconnected
+  }
+  client.loop();
+
+  // Read humidity and temperature
   float humidity = dht.getHumidity();
   float temperature = dht.getTemperature();
 
-    webString="Humidity: "+String((int)humidity)+"% Temp: " + String((int)temperature);
-    server.send(200, "text/plain", webString);               // send to someones browser when asked
-  });
-  
-  server.begin();
-  Serial.println("HTTP server started");
-}
- 
-void loop(void)
-{
-  server.handleClient();
-} 
+  // Create message string
+  messageString = "id=" + String(DEVICE_ID) + "&temp=" + String((int)temperature) + "&hum=" + String((int)humidity);
 
+  // Publish the message to the MQTT topic
+  client.publish("outTopic", messageString.c_str());
+
+  // Wait for 5 seconds
+  delay(5000);
+}
+
+void reconnect() {
+  // Attempt to reconnect until successful
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    if (client.connect(DEVICE_ID)) {
+      Serial.println("connected");
+      client.publish("outTopic", "ESP8266 connected");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      delay(5000);
+    }
+  }
+}
