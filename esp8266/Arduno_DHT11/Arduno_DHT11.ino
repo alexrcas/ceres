@@ -2,8 +2,8 @@
 #include <PubSubClient.h>  // Include PubSubClient library for MQTT
 #include "DHTesp.h"
 
-const char* ssid = "Red Wifi A_1";
-const char* password = "Turing0906";
+const char* ssid = "";
+const char* password = "";
 const char* mqtt_server = "192.168.0.22";  // Removed port from this line
 
 const char* DEVICE_ID = "esp01dht11a";
